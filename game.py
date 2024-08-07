@@ -7,10 +7,6 @@ class Game:
         self._init()
         self.win = win
 
-    def ai_move(self, board):
-        self.board = board
-        self.change_turn()
-
     def update(self):
         self.board.draw(self.win)
         self.draw_valid_moves(self.valid_moves)
@@ -43,7 +39,7 @@ class Game:
     def _move(self, row, col):
         piece = self.board.get_piece(row, col)
         if self.selected and piece == 0 and (row, col) in self.valid_moves:
-            self.board.move(self.selected, row, col)
+            self.animate_move(self.selected, row, col)
             skipped = self.valid_moves[(row, col)]
             if skipped:
                 self.board.remove(skipped)
@@ -52,6 +48,19 @@ class Game:
             return False
 
         return True
+
+    def animate_move(self, piece, end_row, end_col):
+        start_pos = (piece.x, piece.y)
+        end_pos = (end_col * SQUARE_SIZE + SQUARE_SIZE // 2, end_row * SQUARE_SIZE + SQUARE_SIZE // 2)
+        steps = 20
+        for step in range(steps):
+            x = start_pos[0] + (end_pos[0] - start_pos[0]) * step / steps
+            y = start_pos[1] + (end_pos[1] - start_pos[1]) * step / steps
+            self.board.draw(self.win)  # Změněno volání metody
+            piece.draw_at(self.win, x, y)
+            pygame.display.update()
+            pygame.time.delay(10)
+        piece.move(end_row, end_col)
 
     def draw_valid_moves(self, moves):
         for move in moves:
@@ -67,3 +76,7 @@ class Game:
 
     def get_board(self):
         return self.board
+
+    def ai_move(self, board):
+        self.board = board
+        self.change_turn()

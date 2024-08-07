@@ -16,15 +16,17 @@ class Board:
                 pygame.draw.rect(win, BLACK, (col*SQUARE_SIZE, row*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
     def move(self, piece, row, col):
-        self.board[piece.row][piece.col], self.board[row][col] = self.board[row][col], self.board[piece.row][piece.col]
-        piece.move(row, col)
+        if isinstance(piece, Piece):
+            if isinstance(self.board[piece.row][piece.col], Piece) and self.board[row][col] == 0:
+                self.board[piece.row][piece.col], self.board[row][col] = self.board[row][col], self.board[piece.row][piece.col]
+                piece.move(row, col)
 
-        if row == ROWS - 1 or row == 0:
-            piece.make_king()
-            if piece.color == WHITE:
-                self.white_kings += 1
-            else:
-                self.red_kings += 1
+                if row == ROWS - 1 or row == 0:
+                    piece.make_king()
+                    if piece.color == WHITE:
+                        self.white_kings += 1
+                    else:
+                        self.red_kings += 1
 
     def get_piece(self, row, col):
         return self.board[row][col]
@@ -53,12 +55,13 @@ class Board:
 
     def remove(self, pieces):
         for piece in pieces:
-            self.board[piece.row][piece.col] = 0
-            if piece != 0:
-                if piece.color == RED:
-                    self.red_left -= 1
-                else:
-                    self.white_left -= 1
+            if isinstance(piece, Piece):
+                self.board[piece.row][piece.col] = 0
+                if piece != 0:
+                    if piece.color == RED:
+                        self.red_left -= 1
+                    else:
+                        self.white_left -= 1
 
     def winner(self):
         if self.red_left <= 0:
