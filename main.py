@@ -1,7 +1,7 @@
 import pygame
 from constants import WIDTH, HEIGHT, SQUARE_SIZE, RED, WHITE
 from game import Game
-from minimax import minimax
+from minimax import minimax  # Ujistěte se, že je tento řádek přítomen
 
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Dáma')
@@ -21,7 +21,7 @@ def main():
         clock.tick(60)
 
         if game.turn == WHITE:
-            value, new_board = minimax(game.get_board(), 3, True, game)
+            value, new_board = minimax(game.get_board(), 3, float('-inf'), float('inf'), True, game)
             game.ai_move(new_board)
 
         for event in pygame.event.get():
