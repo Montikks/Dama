@@ -39,11 +39,18 @@ class Game:
     def _move(self, row, col):
         piece = self.board.get_piece(row, col)
         if self.selected and piece == 0 and (row, col) in self.valid_moves:
-            self.animate_move(self.selected, row, col)
             skipped = self.valid_moves[(row, col)]
+            self.board.move(self.selected, row, col)
             if skipped:
                 self.board.remove(skipped)
-            self.change_turn()
+                self.valid_moves = self.board.get_valid_moves(self.selected)
+                if not self.valid_moves or not any(len(skips) > 0 for move, skips in
+                                                   self.valid_moves.items()):  # Pokud nejsou další tahy, změňte tah
+                    self.change_turn()
+                else:
+                    return True
+            else:
+                self.change_turn()
         else:
             return False
 

@@ -48,6 +48,10 @@ def main():
                     row, col = get_row_col_from_mouse(pos)
                     game.select(row, col)
 
+            if game.board.winner() is not None:
+                print(f"Winner: {game.board.winner()}")
+                run = False
+
             game.update()
 
     pygame.quit()

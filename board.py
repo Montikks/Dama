@@ -69,6 +69,14 @@ class Board:
         elif self.white_left <= 0:
             return RED
 
+        red_moves = any(self.get_valid_moves(piece) for piece in self.get_all_pieces(RED))
+        white_moves = any(self.get_valid_moves(piece) for piece in self.get_all_pieces(WHITE))
+
+        if not red_moves:
+            return WHITE
+        elif not white_moves:
+            return RED
+
         return None
 
     def get_valid_moves(self, piece):
@@ -78,11 +86,14 @@ class Board:
         row = piece.row
 
         if piece.color == RED or piece.king:
-            moves.update(self._traverse_left(row - 1, max(row-3, -1), -1, piece.color, left))
-            moves.update(self._traverse_right(row - 1, max(row-3, -1), -1, piece.color, right))
+            moves.update(self._traverse_left(row - 1, max(row - 3, -1), -1, piece.color, left))
+            moves.update(self._traverse_right(row - 1, max(row - 3, -1), -1, piece.color, right))
         if piece.color == WHITE or piece.king:
-            moves.update(self._traverse_left(row + 1, min(row+3, ROWS), 1, piece.color, left))
-            moves.update(self._traverse_right(row + 1, min(row+3, ROWS), 1, piece.color, right))
+            moves.update(self._traverse_left(row + 1, min(row + 3, ROWS), 1, piece.color, left))
+            moves.update(self._traverse_right(row + 1, min(row + 3, ROWS), 1, piece.color, right))
+
+        if any(len(skips) > 0 for move, skips in moves.items()):  # Vynucení skákání
+            moves = {move: skips for move, skips in moves.items() if len(skips) > 0}
 
         return moves
 

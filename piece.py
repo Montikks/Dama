@@ -1,5 +1,5 @@
 import pygame
-from constants import RED, WHITE, SQUARE_SIZE, GRAY
+from constants import RED, WHITE, SQUARE_SIZE, GRAY, ROWS
 
 class Piece:
     PADDING = 15
@@ -45,6 +45,8 @@ class Piece:
         self.row = row
         self.col = col
         self.calc_pos()
+        if (self.color == WHITE and self.row == 0) or (self.color == RED and self.row == ROWS - 1):
+            self.make_king()
 
     def __repr__(self):
         return str(self.color)
