@@ -14,7 +14,7 @@ def get_row_col_from_mouse(pos):
     return row, col
 
 def main():
-    pygame.font.init()  # Inicializace fontů
+    pygame.font.init()
     run = True
     clock = pygame.time.Clock()
     game = Game(WIN)
