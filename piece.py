@@ -1,5 +1,6 @@
 import pygame
-from constants import RED, WHITE, SQUARE_SIZE, GRAY, ROWS
+from constants import RED, WHITE, SQUARE_SIZE, GREY, ROWS
+
 
 class Piece:
     PADDING = 15
@@ -29,17 +30,17 @@ class Piece:
 
     def draw(self, win):
         radius = SQUARE_SIZE // 2 - self.PADDING
-        pygame.draw.circle(win, GRAY, (self.x, self.y), radius + self.OUTLINE)
+        pygame.draw.circle(win, GREY, (self.x, self.y), radius + self.OUTLINE)
         pygame.draw.circle(win, self.color, (self.x, self.y), radius)
         if self.king:
-            pygame.draw.circle(win, GRAY, (self.x, self.y), radius // 2)
+            pygame.draw.circle(win, GREY, (self.x, self.y), radius // 2)
 
     def draw_at(self, win, x, y):
         radius = SQUARE_SIZE // 2 - self.PADDING
-        pygame.draw.circle(win, GRAY, (x, y), radius + self.OUTLINE)
+        pygame.draw.circle(win, GREY, (x, y), radius + self.OUTLINE)
         pygame.draw.circle(win, self.color, (x, y), radius)
         if self.king:
-            pygame.draw.circle(win, GRAY, (x, y), radius // 2)
+            pygame.draw.circle(win, GREY, (x, y), radius // 2)
 
     def move(self, row, col):
         self.row = row

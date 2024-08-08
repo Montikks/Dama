@@ -1,6 +1,7 @@
 import pygame
-from constants import BLACK, ROWS, COLS, RED, WHITE, SQUARE_SIZE, GRAY
+from constants import BLACK, ROWS, COLS, RED, WHITE, SQUARE_SIZE, GREY
 from piece import Piece
+
 
 class Board:
     def __init__(self):

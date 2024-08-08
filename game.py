@@ -1,22 +1,28 @@
 import pygame
-from constants import RED, WHITE, BLUE, SQUARE_SIZE
+import json
+from constants import RED, WHITE, SQUARE_SIZE, SOUND_MOVE, SOUND_JUMP, SOUND_WIN
 from board import Board
+
+pygame.mixer.init()
+sound_move = pygame.mixer.Sound(SOUND_MOVE)
+sound_jump = pygame.mixer.Sound(SOUND_JUMP)
+sound_win = pygame.mixer.Sound(SOUND_WIN)
 
 class Game:
     def __init__(self, win):
         self._init()
         self.win = win
 
-    def update(self):
-        self.board.draw(self.win)
-        self.draw_valid_moves(self.valid_moves)
-        pygame.display.update()
-
     def _init(self):
         self.selected = None
         self.board = Board()
         self.turn = RED
         self.valid_moves = {}
+
+    def update(self):
+        self.board.draw(self.win)
+        self.draw_valid_moves(self.valid_moves)
+        pygame.display.update()
 
     def reset(self):
         self._init()
@@ -43,36 +49,24 @@ class Game:
             self.board.move(self.selected, row, col)
             if skipped:
                 self.board.remove(skipped)
+                sound_jump.play()  # Přehrajte zvuk skoku
                 self.valid_moves = self.board.get_valid_moves(self.selected)
-                if not self.valid_moves or not any(len(skips) > 0 for move, skips in
-                                                   self.valid_moves.items()):  # Pokud nejsou další tahy, změňte tah
+                if not self.valid_moves:
                     self.change_turn()
                 else:
                     return True
             else:
+                sound_move.play()  # Přehrajte zvuk pohybu
                 self.change_turn()
         else:
             return False
 
         return True
 
-    def animate_move(self, piece, end_row, end_col):
-        start_pos = (piece.x, piece.y)
-        end_pos = (end_col * SQUARE_SIZE + SQUARE_SIZE // 2, end_row * SQUARE_SIZE + SQUARE_SIZE // 2)
-        steps = 20
-        for step in range(steps):
-            x = start_pos[0] + (end_pos[0] - start_pos[0]) * step / steps
-            y = start_pos[1] + (end_pos[1] - start_pos[1]) * step / steps
-            self.board.draw(self.win)  # Změněno volání metody
-            piece.draw_at(self.win, x, y)
-            pygame.display.update()
-            pygame.time.delay(10)
-        piece.move(end_row, end_col)
-
     def draw_valid_moves(self, moves):
         for move in moves:
             row, col = move
-            pygame.draw.circle(self.win, BLUE, (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), 15)
+            pygame.draw.circle(self.win, (0, 255, 0), (col * SQUARE_SIZE + SQUARE_SIZE // 2, row * SQUARE_SIZE + SQUARE_SIZE // 2), 15)
 
     def change_turn(self):
         self.valid_moves = {}
@@ -87,3 +81,31 @@ class Game:
     def ai_move(self, board):
         self.board = board
         self.change_turn()
+
+    def save_game(self, filename='savegame.json'):
+        game_state = {
+            'board': self.board.board,
+            'turn': self.turn,
+            'selected': (self.selected.row, self.selected.col) if self.selected else None
+        }
+        with open(filename, 'w') as f:
+            json.dump(game_state, f)
+
+    def load_game(self, filename='savegame.json'):
+        with open(filename, 'r') as f:
+            game_state = json.load(f)
+
+        self.board.board = game_state['board']
+        self.turn = game_state['turn']
+        if game_state['selected']:
+            self.selected = self.board.get_piece(*game_state['selected'])
+        else:
+            self.selected = None
+        self.valid_moves = {}
+
+    def check_winner(self):
+        winner = self.board.winner()
+        if winner is not None:
+            sound_win.play()  # Přehrajte zvuk vítězství
+            return winner
+        return None
